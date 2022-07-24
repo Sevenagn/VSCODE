@@ -89,3 +89,6 @@ class Car:
 car=Car(1,2)
 print(id(car))
 
+#斐波那契数列
+
+
