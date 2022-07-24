@@ -106,14 +106,35 @@
 # print (fib(5))
 
 #汉诺塔
-def hanoi(n, a, b, c):
-    if n == 1:
-        print(a, '-->', c)
-    else:
-        hanoi(n - 1, a, c, b)
-        print(a, '-->', c)
-        hanoi(n - 1, b, a, c)
-hanoi(3, 'A', 'B', 'C')
+# def hanoi(n, a, b, c):
+#     if n == 1:
+#         print(a, '-->', c)
+#     else:
+#         hanoi(n - 1, a, c, b)
+#         print(a, '-->', c)
+#         hanoi(n - 1, b, a, c)
+# hanoi(3, 'A', 'B', 'C')
+
+#八皇后问题
+def eight_queen(n):
+    def check(queens,row,col):
+        for i in range(row):
+            if queens[i]==col or abs(row-i)==abs(queens[i]-col):
+                return False
+        return True
+    def dfs(queens,row):
+        if row==n:
+            print(queens)
+        else:
+            for col in range(n):
+                if check(queens,row,col):
+                    queens[row]=col
+                    dfs(queens,row+1)
+                    queens[row]=-1
+    queens=[-1 for i in range(n)]
+    dfs(queens,0)
+eight_queen(8)
+
 
 
 
