@@ -40,7 +40,7 @@
 #斐波那契数列
 # def fib(n):
 #     if n==1:
-#         return 5
+#         return 1
 #     if n==2:
 #         return 1
 #     return fib(n-1)+fib(n-2)
@@ -78,17 +78,42 @@
 # import os
 # print(os.listdir)
 
-class Car:
-    def __init__(self,x,y):
-        self.x=x
-        self.y=y
-    def __new__(cls: type[Self]) -> Self:
-        pass
-    def move():
-        print('--------------')
-car=Car(1,2)
-print(id(car))
+# class Car:
+#     def __init__(self,x,y):
+#         self.x=x
+#         self.y=y
+#     def __new__(cls: type[Self]) -> Self:
+#         pass
+#     def move():
+#         print('--------------')
+# car=Car(1,2)
+# print(id(car))
 
 #斐波那契数列
+# def fib(n):   #递归实现           
+#     if n==1:
+#         return 5
+#     if n==2:
+#         return 1
+#     return fib(n-1)+fib(n-2)
+# print (fib(5))
+
+# def fib(n):   #循环实现
+#     a,b=0,1
+#     for i in range(n):
+#         a,b=b,a+b
+#     return a
+# print (fib(5))
+
+#汉诺塔
+def hanoi(n, a, b, c):
+    if n == 1:
+        print(a, '-->', c)
+    else:
+        hanoi(n - 1, a, c, b)
+        print(a, '-->', c)
+        hanoi(n - 1, b, a, c)
+hanoi(3, 'A', 'B', 'C')
+
 
 
