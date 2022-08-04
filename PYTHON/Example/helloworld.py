@@ -101,9 +101,10 @@
 # def fib(n):   #循环实现
 #     a,b=0,1
 #     for i in range(n):
+#         yield b
 #         a,b=b,a+b
 #     return a
-# print (fib(5))
+# print (list(fib(5)))
 
 #汉诺塔
 # def hanoi(n, a, b, c):
@@ -116,6 +117,7 @@
 # hanoi(3, 'A', 'B', 'C')
 
 #八皇后问题
+<<<<<<< HEAD
 def eight_queen(n):
     def check(queens,row,col):
         for i in range(row):
@@ -135,6 +137,60 @@ def eight_queen(n):
     dfs(queens,0)
 eight_queen(8)
   
+=======
+# def eight_queen(n):
+#     def check(queens,row,col):
+#         for i in range(row):
+#             if queens[i]==col or abs(row-i)==abs(queens[i]-col):
+#                 return False
+#         return True
+#     def dfs(queens,row):
+#         if row==n:
+#             print(queens)
+#         else:
+#             for col in range(n):
+#                 if check(queens,row,col):
+#                     queens[row]=col
+#                     dfs(queens,row+1)
+#                     queens[row]=-1
+#     queens=[-1 for i in range(n)]
+#     dfs(queens,0)
+# eight_queen(8)
 
+#实例化一个单例
+# class Singleton:
+#     def __new__(cls, *args, **kwargs):
+#         if not hasattr(cls, '_instance'):
+#             cls._instance = super().__new__(cls)
+#         return cls._instance
+# s=Singleton()
+# s1=Singleton()
+# print(id(s1))
+# print(id(s))
+>>>>>>> 98696f9e752a51226099bd3e8ffc2dc61567f47e
 
+#迭代器
+# class MyRange:
+#     def __init__(self,start,end):
+#         self.start=start
+#         self.end=end
+#     def __iter__(self):
+#         return self
+#     def __next__(self):
+#         if self.start<self.end:
+#             self.start+=1
+#             return self.start
+#         else:
+#             raise StopIteration
+# for i in MyRange(1,10):
+#     print(i)
+
+#异常处理
+# try:
+#     print(1/0)
+# except Exception as e:
+#     print(e)
+# finally:
+#     print('finally')
+# print('end')
 
