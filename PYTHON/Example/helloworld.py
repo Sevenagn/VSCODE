@@ -134,7 +134,7 @@ def eight_queen(n):
     queens=[-1 for i in range(n)]
     dfs(queens,0)
 eight_queen(8)
-
+  
 
 
 
