@@ -162,3 +162,7 @@ eight_queen(8)
 #     print('finally')
 # print('end')
 
+from numpy import *
+from pandas import DataFrame
+df =DataFrame(np.random.randint(0,10,size=(3,4)),columns=['a','b','c','d'])
+df
