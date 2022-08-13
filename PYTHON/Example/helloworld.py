@@ -170,3 +170,10 @@ df
 (((((())))))
 {{{{{{}}}}}}
 [[[[[[]]]]]]
+
+"editorBracketHighlight.foreground1": "#6495ed",
+        "editorBracketHighlight.foreground2": "#f66e5d",
+        "editorBracketHighlight.foreground3": "#2d9472",
+        "editorBracketHighlight.foreground4": "#f2de3d",
+        "editorBracketHighlight.foreground5": "#f3caca",
+        "editorBracketHighlight.foreground6": "#d43f1a"
