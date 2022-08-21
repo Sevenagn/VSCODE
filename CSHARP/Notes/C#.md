@@ -10,7 +10,7 @@ C# Code compiled to IL Code(intermediate luanguage code) which is independent of
 2. FCL(Framework Class Library) 
 
 ### C# A Programming Language
-#### Architecture of .NET Application
+#### Architecture of .NET Application 
 
 1. Application
 ![application](./assets/application.png)
