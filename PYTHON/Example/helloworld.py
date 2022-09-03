@@ -117,24 +117,24 @@
 # hanoi(3, 'A', 'B', 'C')
 
 #八皇后问题
-def eight_queen(n):
-    def check(queens,row,col):
-        for i in range(row):
-            if queens[i]==col or abs(row-i)==abs(queens[i]-col):
-                return False
-        return True
-    def dfs(queens,row):
-        if row==n:
-            print(queens)
-        else:
-            for col in range(n):
-                if check(queens,row,col):
-                    queens[row]=col
-                    dfs(queens,row+1)
-                    queens[row]=-1
-    queens=[-1 for i in range(n)]
-    dfs(queens,0)
-eight_queen(8)
+# def eight_queen(n):
+#     def check(queens,row,col):
+#         for i in range(row):
+#             if queens[i]==col or abs(row-i)==abs(queens[i]-col):
+#                 return False
+#         return True
+#     def dfs(queens,row):
+#         if row==n:
+#             print(queens)
+#         else:
+#             for col in range(n):
+#                 if check(queens,row,col):
+#                     queens[row]=col
+#                     dfs(queens,row+1)
+#                     queens[row]=-1
+#     queens=[-1 for i in range(n)]
+#     dfs(queens,0)
+# eight_queen(8)
   
 
 #迭代器
@@ -162,11 +162,19 @@ eight_queen(8)
 #     print('finally')
 # print('end')
 
-from numpy import *
-from pandas import DataFrame
-df =DataFrame(np.random.randint(0,10,size=(3,4)),columns=['a','b','c','d'])
-df
+# from numpy import *
+# from pandas import DataFrame
+# df =DataFrame(np.random.randint(0,10,size=(3,4)),columns=['a','b','c','d'])
+# df
 
-(((((())))))
-{{{{{{}}}}}}
-[[[[[[]]]]]]
+
+# a=[1,2,3] 
+# b=[4,5,6]
+# print(a + b)
+
+# import numpy as np
+# a=np.arrange(3)
+# print(a)
+
+a=[1,2,3]
+print(a[1:])
