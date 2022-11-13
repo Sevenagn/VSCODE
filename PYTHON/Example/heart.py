@@ -8,7 +8,7 @@ CANVAS_HEIGHT = 480  # 画布的高
 CANVAS_CENTER_X = CANVAS_WIDTH / 2  # 画布中心的X轴坐标
 CANVAS_CENTER_Y = CANVAS_HEIGHT / 2  # 画布中心的Y轴坐标
 IMAGE_ENLARGE = 11  # 放大比例
-HEART_COLOR = "#f9a3d2"  # 心的颜色，这个是中国红
+HEART_COLOR = "#f9a3d2"  # 心的颜色
 
 
 def heart_function(t, shrink_ratio: float = IMAGE_ENLARGE):
