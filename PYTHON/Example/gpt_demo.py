@@ -172,19 +172,21 @@ if __name__ == "__main__":
     file_path = filedialog.askopenfilename(filetypes=[("Text files", "*.txt")])
     if file_path:
         input_directory = os.path.dirname(file_path)+'/'
-        input_directory = input_directory.replace('/', '\\')
+        input_directory_new = input_directory.replace('/', '\\')
+
         data = read_txt_file(file_path)
 
         if data:
             records = split_records(data)
-            transfer_records = extract_transfer_records(records,input_directory)
+            transfer_records = extract_transfer_records(records,input_directory_new)
             df = pd.DataFrame(transfer_records)
             # print(df)
             df['转账对象'] = df['转账对象'].str.replace('\n', '')
             # df['转账金额'] = df['转账金额'].abs()
             df['转账金额'] = pd.to_numeric(df['转账金额'], errors='coerce').abs()
             df = df.sort_values(by='转账时间')
-            output_file = r"D:\payinfo\2023\output.xlsx"
+            # output_file = r"D:\payinfo\2023\output.xlsx"
+            output_file = file_path.replace('txt', 'xlsx')
             write_to_excel(df, output_file)
 
             # for record in transfer_records:
