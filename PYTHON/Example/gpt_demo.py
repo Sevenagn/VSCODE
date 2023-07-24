@@ -70,7 +70,6 @@ def extract_transfer_records(records):
                 "转账时间": transfer_time,
                 "转账单号": transfer_number,
                 "转账截图": image_path,
-                
                 "识别状态": "成功",
                 "未识别字段1": temp2,
                 "未识别字段2": temp3
