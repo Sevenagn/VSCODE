@@ -25,29 +25,35 @@ def read_txt_file(file_path):
 def split_records(data):
     # 定义用于分割记录的正则表达式
     record_delimiter = r"\n\n\n"
-
+    # record_delimiter = r"≦\s\S+\.jpg\s≧"
     # 分割文本数据为每条记录
     records = re.split(record_delimiter, data.strip())
 
     return records
 
-def extract_transfer_records(records,input_dir):
+def extract_transfer_records(records):
     # 定义用于提取字段的正则表达式
     # pattern = r"转账-转给(.*?)(-?\d+\.\d+)(?:\n当前状态|¥￥P|¥P).*?\n(.*?)\n转账时间\n(.*?)\n收款时间\n(.*?)\n支付方式\n(.*?)\n转账单号\n(\d+)"
-    pattern1 = r"≦(.*?)≧(.*?)转账-转给(.*?)(-?\d+\.\d+)\n当前状态\n(.*?)\n转账时间\n(.*?)\n收款时间\n(.*?)\n转账单号\n(\d+)"
-    pattern2 = r"≦(.*?)≧(.*?)扫二维码付款-给(.*?)(-?\d+\.\d+)\n支付成功\n(.*?)\n转账时间\n(.*?)\n转账单号\n(\d+)"
-    pattern3 = r"≦(.*?)≧(.*?)转账-转给(.*?)(-?\d+\.\d+)\n当前状态\n(.*?)\n转账时间\n(.*?)\n收款时间\n(.*?)\n转账单号\n(\d+)"
+    # pattern1 = r"≦(.*?)≧(.*?)转账-转给(.*?)(-?\d+\.\d+)\n当前状态\n(.*?)\n转账时间\n(.*?)\n收款时间\n(.*?)\n转账单号\n(\d+)"
+    pattern1 = r"≦(.*?)≧(.*?)转账-转给(.*?)(-?\d+\.\d+)\n(.*?)\n转账时间\n(.*?)\n收款时间\n(.*?)\n转账单号\n(\d+)"
+    # pattern2 = r"≦(.*?)≧(.*?)扫二维码付款-给(.*?)(-?\d+\.\d+)\n支付成功\n(.*?)\n转账时间\n(.*?)\n转账单号\n(\d+)"
+    pattern2 = r"≦(.*?)≧(.*?)扫二维码付款-给(.*?)(-?\d+\.\d+)\n(.*?)\n转账时间\n(.*?)\n转账单号\n(\d+)"
+    # pattern3 = r"≦(.*?)≧(.*?)(-?\d+\.\d+)\n支付成功\n(.*?)\n支付时间\n(.*?)\n商品\n(.*?)\n商户全称\n(.*?)\n收单机构\n(.*?)\n交易单号\n(\d+)"
+    pattern3 = r"≦(.*?)≧(.*?)(-?\d+\.\d+)\n(.*?)\n支付时间\n(.*?)\n商品\n(.*?)\n商户全称\n(.*?)\n收单机构\n(.*?)\n交易单号\n(\d+)"
     pattern_error = r"≦(.*?)≧(.*?)"
     # pattern = r"转账-转给(.*?)\n(-?\d+\.\d+)\n当前状态\n(.*?)\n转账时间\n(.*?)\n收款时间\n(.*?)\n支付方式\n(.*?)\n转账单号\n(\d+)"
     # 存储提取出的数据
     extracted_data = []
 
     for record in records:
+        if "任务开始" in record or "任务结束" in record:
+            continue
         match = re.search(pattern1, record, re.DOTALL)
         if match:
             image_name = match.group(1).strip()
             # image_path = "=HYPERLINK(\"D:\\payinfo\\2023\\"+image_name+"\")"
-            image_path = "=HYPERLINK(\""+input_dir+image_name+"\")"
+            # image_path = "=HYPERLINK(\""+input_dir+image_name+"\")"
+            image_path = "=HYPERLINK(MID(CELL(\"filename\"),1,FIND(\"[\",CELL(\"filename\"))-1) & \""+image_name+"\", \"点击查看转账截图\")"
             temp1 = match.group(2)
             transfer_to = match.group(3).strip()
             transfer_amount = float(match.group(4).replace(',', ''))  # 去除金额中的逗号并转为浮点数
@@ -63,7 +69,7 @@ def extract_transfer_records(records,input_dir):
                 "转账金额": transfer_amount,
                 "转账时间": transfer_time,
                 "转账单号": transfer_number,
-                "图片名称": image_path,
+                "转账截图": image_path,
                 
                 "识别状态": "成功",
                 "未识别字段1": temp2,
@@ -76,7 +82,8 @@ def extract_transfer_records(records,input_dir):
             if match:
                 image_name = match.group(1).strip()
                 # image_path = "=HYPERLINK(\"D:\\payinfo\\2023\\"+image_name+"\")"
-                image_path = "=HYPERLINK(\""+input_dir+image_name+"\")"
+                # image_path = "=HYPERLINK(\""+input_dir+image_name+"\")"
+                image_path = "=HYPERLINK(MID(CELL(\"filename\"),1,FIND(\"[\",CELL(\"filename\"))-1) & \""+image_name+"\", \"点击查看转账截图\")"
                 temp1 = match.group(2)
                 transfer_to = match.group(3).strip()
                 transfer_amount = float(match.group(4).replace(',', ''))  # 去除金额中的逗号并转为浮点数
@@ -92,7 +99,7 @@ def extract_transfer_records(records,input_dir):
                     "转账金额": transfer_amount,
                     "转账时间": transfer_time,
                     "转账单号": transfer_number,
-                    "图片名称": image_path,
+                    "转账截图": image_path,
                     "识别状态": "成功",
                     "未识别字段1": temp2,
                     "未识别字段2": ""
@@ -104,15 +111,16 @@ def extract_transfer_records(records,input_dir):
                 if match:
                     image_name = match.group(1).strip()
                     # image_path = "=HYPERLINK(\"D:\\payinfo\\2023\\"+image_name+"\")"
-                    image_path = "=HYPERLINK(\""+input_dir+image_name+"\")"
+                    # image_path = "=HYPERLINK(\""+input_dir+image_name+"\")"
+                    image_path = "=HYPERLINK(MID(CELL(\"filename\"),1,FIND(\"[\",CELL(\"filename\"))-1) & \""+image_name+"\", \"点击查看转账截图\")"
                     temp1 = match.group(2)
-                    transfer_to = match.group(3).strip()
-                    transfer_amount = float(match.group(4).replace(',', ''))  # 去除金额中的逗号并转为浮点数
-                    temp2 = match.group(5).strip()  # 去除状态前后的空格
-                    transfer_time = match.group(6)
-                    # temp3 = match.group(7)
-                    # payment_method = match.group(6)
-                    transfer_number = match.group(7)
+                    transfer_to = match.group(7).strip()
+                    transfer_amount = float(match.group(3).replace(',', ''))  # 去除金额中的逗号并转为浮点数
+                    temp2 = match.group(4).strip()  # 去除状态前后的空格
+                    transfer_time = match.group(5)
+                    temp3 = match.group(6)
+                    temp4 = match.group(8)
+                    transfer_number = match.group(9)
 
                     # 将提取出的数据以字典形式存储
                     transfer_record = {
@@ -120,7 +128,7 @@ def extract_transfer_records(records,input_dir):
                         "转账金额": transfer_amount,
                         "转账时间": transfer_time,
                         "转账单号": transfer_number,
-                        "图片名称": image_path,
+                        "转账截图": image_path,
                         "识别状态": "成功",
                         "未识别字段1": temp2,
                         "未识别字段2": ""
@@ -132,14 +140,15 @@ def extract_transfer_records(records,input_dir):
                     if match:
                         image_name = match.group(1).strip()
                         # image_path = "=HYPERLINK(\"D:\\payinfo\\2023\\"+image_name+"\")"
-                        image_path = "=HYPERLINK(\""+input_dir+image_name+"\")"
+                        # image_path = "=HYPERLINK(\""+input_dir+image_name+"\")"
+                        image_path = "=HYPERLINK(MID(CELL(\"filename\"),1,FIND(\"[\",CELL(\"filename\"))-1) & \""+image_name+"\", \"点击查看转账截图\")"
                         # 将提取出的数据以字典形式存储
                         transfer_record = {
                             "转账对象": "",
                             "转账金额": "",
                             "转账时间": "",
                             "转账单号": "",
-                            "图片名称": image_path,
+                            "转账截图": image_path,
                             "识别状态": "失败，转账内容无法识别",
                             "未识别字段1": record,
                             "未识别字段2": ""
@@ -153,7 +162,7 @@ def extract_transfer_records(records,input_dir):
                             "转账金额": "",
                             "转账时间": "",
                             "转账单号": "",
-                            "图片名称": "",
+                            "转账截图": "",
                             "识别状态": "失败，转账记录无法识别",
                             "未识别字段1": record,
                             "未识别字段2": ""
@@ -178,7 +187,7 @@ if __name__ == "__main__":
 
         if data:
             records = split_records(data)
-            transfer_records = extract_transfer_records(records,input_directory_new)
+            transfer_records = extract_transfer_records(records)
             df = pd.DataFrame(transfer_records)
             # print(df)
             df['转账对象'] = df['转账对象'].str.replace('\n', '')
