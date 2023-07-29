@@ -67,7 +67,9 @@ def main():
     df = pd.read_excel(excel_file)
 
     # 获取第四列交易单号，并转换为列表
-    trade_numbers = df.iloc[:, 3].dropna().astype(str).tolist()
+    # trade_numbers = df.iloc[:, 3].dropna().astype(str).tolist()
+    # 获取"转账单号"列，并转换为列表
+    trade_numbers = df["转账单号"].dropna().astype(str).tolist()
 
     total_trade_numbers = len(trade_numbers)
 
