@@ -96,15 +96,15 @@ def main():
         f.write(f"Legal Matched trade numbers in the PDF: {occurrences_equal_to_1}\n")
         print(f"Illegal Matched trade numbers in the PDF: {occurrences_not_equal_to_1}")
         f.write(f"Illegal Matched trade numbers in the PDF: {occurrences_not_equal_to_1}\n")
+        print(f"Marked PDF saved to {output_file}")
+        f.write(f"Marked PDF saved to {output_file}")
+        print(f"Log has been saved to {txt_file}")
         print(f"Illegal Matched trade numbers and their occurrences in the PDF:")
         f.write("Trade numbers and their occurrences in the PDF:\n")
         for trade_number, occurrences in matched_trade_numbers.items():
             f.write(f"Trade Number: {trade_number}, Occurrences: {occurrences}\n")
             if occurrences != 1:
                 print(f"Trade Number: {trade_number}, Occurrences: {occurrences}")
-        print(f"Marked PDF saved to {output_file}")
-        f.write(f"Marked PDF saved to {output_file}")
-        print(f"Log has been saved to {txt_file}")
 
 
 if __name__ == "__main__":
