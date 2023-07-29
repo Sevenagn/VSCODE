@@ -3,7 +3,7 @@ import time
 import pandas as pd
 import fitz  # PyMuPDF
 
-def highlight_trade_numbers(input_path, output_path, trade_numbers, highlight_color=(1, 0, 0)):
+def highlight_trade_numbers(input_path, output_path, trade_data):
     def truncate_trade_number_length(trade_number, length):
         return trade_number[length:]
 
@@ -11,8 +11,11 @@ def highlight_trade_numbers(input_path, output_path, trade_numbers, highlight_co
     matched_trade_numbers = {}  # 记录每个交易单号匹配到的次数
     not_found_trade_numbers = []   # 记录未匹配到的交易单号
 
-    for trade_number in trade_numbers:
+    for _, row in trade_data.iterrows():
+        trade_number = row["交易单号"].strip()
+        transaction_type = row["收/支"]
         truncated_trade_number_22 = trade_number[:22]
+        # truncated_trade_number_22 = trade_number
         truncated_trade_number_16 = trade_number[16:]
         trade_number_found = False  # 用于标记当前交易单号是否找到匹配
 
@@ -32,8 +35,11 @@ def highlight_trade_numbers(input_path, output_path, trade_numbers, highlight_co
                     print(f"Trade Number: {trade_number}, Page: {page_number + 1}, Rect: {rect}")
                     # 添加高亮标注
                     highlight = page.add_highlight_annot(rect)
-                    # 设置高亮颜色
+                    # 设置高亮颜色为绿色或红色
+                    # highlight_color = (0, 255, 0) if transaction_type == '收入' else (255, 0, 0)
+                    highlight_color = (0, 1, 0) if transaction_type == '收入' else (1, 0, 0)
                     highlight.set_colors(stroke=highlight_color)
+                    highlight.update()
 
         if not trade_number_found:
             for page_number in range(pdf_document.page_count):
@@ -52,8 +58,11 @@ def highlight_trade_numbers(input_path, output_path, trade_numbers, highlight_co
                         print(f"Trade Number: {trade_number}, Page: {page_number + 1}, Rect: {rect}")
                         # 添加高亮标注
                         highlight = page.add_highlight_annot(rect)
-                        # 设置高亮颜色
+                         # 设置高亮颜色为绿色或红色
+                        # highlight_color = (0, 255, 0) if transaction_type == '收入' else (255, 0, 0)
+                        highlight_color = (0, 1, 0) if transaction_type == '收入' else (1, 0, 0)
                         highlight.set_colors(stroke=highlight_color)
+                        highlight.update()
 
         if not trade_number_found:
             not_found_trade_numbers.append(trade_number)
@@ -64,25 +73,24 @@ def highlight_trade_numbers(input_path, output_path, trade_numbers, highlight_co
     return matched_trade_numbers, not_found_trade_numbers
 
 def main():
-    input_file = r"D:\wechatbills\2020.pdf"   # 输入的PDF文件路径
+    input_file = r"D:\wechatbills\2023.pdf"   # 输入的PDF文件路径
     output_file = input_file.replace(".pdf", "_marked.pdf")  # 输出的高亮后的PDF文件路径
-    highlight_color = (1, 0, 0)  # 高亮颜色，这里使用红色
 
-    # 构建对应的Excel文件路径
-    excel_file = input_file.replace(".pdf", ".xlsx")
+    # 构建对应的CSV文件路径
+    csv_file = input_file.replace(".pdf", ".csv")
 
-    df = pd.read_excel(excel_file)
+    df = pd.read_csv(csv_file)
 
-    # 获取"转账单号"列，并转换为列表
-    trade_numbers = df["转账单号"].dropna().astype(str).tolist()
+    # 获取 "收/支", "交易单号" 和 "商户单号" 列，并转换为 DataFrame
+    trade_data = df[["收/支", "交易单号", "商户单号"]].dropna()
 
-    total_trade_numbers = len(trade_numbers)
+    total_trade_numbers = len(trade_data)
 
     # 记录开始时间
     start_time = time.time()
 
     # 根据交易单号在PDF的所有页面添加高亮，并记录匹配和未匹配的交易单号笔数
-    matched_trade_numbers, not_found_trade_numbers = highlight_trade_numbers(input_file, output_file, trade_numbers, highlight_color)
+    matched_trade_numbers, not_found_trade_numbers = highlight_trade_numbers(input_file, output_file, trade_data)
 
     # 记录结束时间
     end_time = time.time()
