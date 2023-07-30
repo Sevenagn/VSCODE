@@ -9,6 +9,7 @@ def highlight_trade_numbers(input_path, output_path, trade_data,input_type):
     matched_trade_numbers = {}  # 记录每个交易单号匹配到的次数
     ##匹配长度
     match_len = 22
+    ##标注x坐标
     rect_x0 = 42
     rect_x1 = 552
     if input_type == "alipay" :
@@ -30,13 +31,13 @@ def highlight_trade_numbers(input_path, output_path, trade_data,input_type):
         for page_number in range(pdf_document.page_count):
             page = pdf_document[page_number]
 
-            # 尝试截取前22位进行匹配
+            # 尝试截取前match_len位进行匹配
             occurrences_f = page.search_for(truncated_trade_number_f)
             if occurrences_f:
                 
                 for rect_f in occurrences_f:
                     if len(truncated_trade_number_s) > 0:
-                        # 尝试截取前22位进行匹配
+                        # 尝试截取后match_len位进行匹配
                         occurrences_s = page.search_for(truncated_trade_number_s)
                         if occurrences_s:
                             for rect_s in occurrences_s:
