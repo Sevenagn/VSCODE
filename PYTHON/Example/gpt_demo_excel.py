@@ -31,6 +31,12 @@ def split_records(data):
 
     return records
 
+def process_string(entry):
+    if '\n' in entry:
+        return entry.split('\n')[-1]
+    else:
+        return entry
+
 def extract_transfer_records(records):
     # 定义用于提取字段的正则表达式
     # pattern = r"转账-转给(.*?)(-?\d+\.\d+)(?:\n当前状态|¥￥P|¥P).*?\n(.*?)\n转账时间\n(.*?)\n收款时间\n(.*?)\n支付方式\n(.*?)\n转账单号\n(\d+)"
@@ -40,6 +46,7 @@ def extract_transfer_records(records):
     pattern2 = r"≦(.*?)≧(.*?)扫二维码付款-给(.*?)(-?\d+\.\d+)\n(.*?)\n转账时间\n(.*?)\n转账单号\n(\d+)"
     # pattern3 = r"≦(.*?)≧(.*?)(-?\d+\.\d+)\n支付成功\n(.*?)\n支付时间\n(.*?)\n商品\n(.*?)\n商户全称\n(.*?)\n收单机构\n(.*?)\n交易单号\n(\d+)"
     pattern3 = r"≦(.*?)≧(.*?)(-?\d+\.\d+)\n(.*?)\n支付时间\n(.*?)\n商品\n(.*?)\n商户全称\n(.*?)\n收单机构\n(.*?)\n交易单号\n(\d+)"
+    pattern4 = r"≦(.*?)≧(.*?)账单详情\n(.*?)(-?\d+\.\d+)\n(.*?)\n创建时间\n(.*?)\n(.*?)"
     pattern_error = r"≦(.*?)≧(.*?)"
     # pattern = r"转账-转给(.*?)\n(-?\d+\.\d+)\n当前状态\n(.*?)\n转账时间\n(.*?)\n收款时间\n(.*?)\n支付方式\n(.*?)\n转账单号\n(\d+)"
     # 存储提取出的数据
@@ -135,39 +142,68 @@ def extract_transfer_records(records):
                     }
                     extracted_data.append(transfer_record)
                 else:
-                    match = re.search(pattern_error, record, re.DOTALL)
+                    # pattern4 = r"≦(.*?)≧(.*?)账单详情\n(.*?)(-?\d+\.\d+)\n(.*?)\n创建时间\n(.*?)\n(.*?)"
+                    match = re.search(pattern4, record, re.DOTALL)
                     if match:
                         image_name = match.group(1).strip()
                         # image_path = "=HYPERLINK(\"D:\\payinfo\\2023\\"+image_name+"\")"
                         # image_path = "=HYPERLINK(\""+input_dir+image_name+"\")"
                         image_path = "=HYPERLINK(MID(CELL(\"filename\"),1,FIND(\"[\",CELL(\"filename\"))-1) & \""+image_name+"\", \"点击查看转账截图\")"
+                        temp1 = match.group(2)
+                        transfer_to = match.group(3).strip()
+                        transfer_amount = float(match.group(4).replace(',', ''))  # 去除金额中的逗号并转为浮点数
+                        temp2 = match.group(5).strip()  # 去除状态前后的空格
+                        create_time = match.group(6)
+                        # pay_time = match.group(7)
+                        # # payment_method = match.group(6)
+                        # transfer_number = match.group(8)
+
                         # 将提取出的数据以字典形式存储
                         transfer_record = {
-                            "转账对象": "",
-                            "转账金额": "",
-                            "转账时间": "",
-                            "转账单号": "",
+                            "账单详情": transfer_to,
+                            "账单金额": transfer_amount,
+                            "创建时间": create_time,
                             "转账截图": image_path,
-                            "识别状态": "失败，转账内容无法识别",
-                            "未识别字段1": record,
+                            "识别状态": "成功",
+                            "未识别字段1": temp2,
                             "未识别字段2": ""
 
                         }
                         extracted_data.append(transfer_record)
                     else:
-                        # 将提取出的数据以字典形式存储
-                        transfer_record = {
-                            "转账对象": "",
-                            "转账金额": "",
-                            "转账时间": "",
-                            "转账单号": "",
-                            "转账截图": "",
-                            "识别状态": "失败，转账记录无法识别",
-                            "未识别字段1": record,
-                            "未识别字段2": ""
+                        match = re.search(pattern_error, record, re.DOTALL)
+                        if match:
+                            image_name = match.group(1).strip()
+                            # image_path = "=HYPERLINK(\"D:\\payinfo\\2023\\"+image_name+"\")"
+                            # image_path = "=HYPERLINK(\""+input_dir+image_name+"\")"
+                            image_path = "=HYPERLINK(MID(CELL(\"filename\"),1,FIND(\"[\",CELL(\"filename\"))-1) & \""+image_name+"\", \"点击查看转账截图\")"
+                            # 将提取出的数据以字典形式存储
+                            transfer_record = {
+                                "转账对象": "",
+                                "转账金额": "",
+                                "转账时间": "",
+                                "转账单号": "",
+                                "转账截图": image_path,
+                                "识别状态": "失败，转账内容无法识别",
+                                "未识别字段1": record,
+                                "未识别字段2": ""
 
-                        }
-                        extracted_data.append(transfer_record)
+                            }
+                            extracted_data.append(transfer_record)
+                        else:
+                            # 将提取出的数据以字典形式存储
+                            transfer_record = {
+                                "转账对象": "",
+                                "转账金额": "",
+                                "转账时间": "",
+                                "转账单号": "",
+                                "转账截图": "",
+                                "识别状态": "失败，转账记录无法识别",
+                                "未识别字段1": record,
+                                "未识别字段2": ""
+
+                            }
+                            extracted_data.append(transfer_record)
 
     return extracted_data
 
@@ -181,6 +217,9 @@ if __name__ == "__main__":
     if file_path:
         input_directory = os.path.dirname(file_path)+'/'
         input_directory_new = input_directory.replace('/', '\\')
+        input_type = "wechat"
+        if "douyin" in input_directory:
+            input_type = "douyin"
 
         data = read_txt_file(file_path)
 
@@ -189,10 +228,15 @@ if __name__ == "__main__":
             transfer_records = extract_transfer_records(records)
             df = pd.DataFrame(transfer_records)
             # print(df)
-            df['转账对象'] = df['转账对象'].str.replace('\n', '')
-            # df['转账金额'] = df['转账金额'].abs()
-            df['转账金额'] = pd.to_numeric(df['转账金额'], errors='coerce').abs()
-            df = df.sort_values(by='转账时间')
+            if input_type == "wechat":
+                df['转账对象'] = df['转账对象'].str.replace('\n', '')
+                # df['转账金额'] = df['转账金额'].abs()
+                df['转账金额'] = pd.to_numeric(df['转账金额'], errors='coerce').abs()
+                df = df.sort_values(by='转账时间')
+            else:
+                df['账单详情'] = df['账单详情'].str.replace('>', '') #.replace(')', '').replace('》', '')
+                df['账单详情'] = df['账单详情'].apply(process_string)
+                df = df.sort_values(by='创建时间')
             # output_file = r"D:\payinfo\2023\output.xlsx"
             output_file = file_path.replace('txt', 'xlsx')
             write_to_excel(df, output_file)
