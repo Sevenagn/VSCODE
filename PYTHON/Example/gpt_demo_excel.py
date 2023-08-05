@@ -46,7 +46,7 @@ def extract_transfer_records(records):
     pattern2 = r"≦(.*?)≧(.*?)扫二维码付款-给(.*?)(-?\d+\.\d+)\n(.*?)\n转账时间\n(.*?)\n转账单号\n(\d+)"
     # pattern3 = r"≦(.*?)≧(.*?)(-?\d+\.\d+)\n支付成功\n(.*?)\n支付时间\n(.*?)\n商品\n(.*?)\n商户全称\n(.*?)\n收单机构\n(.*?)\n交易单号\n(\d+)"
     pattern3 = r"≦(.*?)≧(.*?)(-?\d+\.\d+)\n(.*?)\n支付时间\n(.*?)\n商品\n(.*?)\n商户全称\n(.*?)\n收单机构\n(.*?)\n交易单号\n(\d+)"
-    pattern4 = r"≦(.*?)≧(.*?)账单详情\n(.*?)(-?\d+\.\d+)\n(.*?)\n创建时间\n(.*?)\n(.*?)"
+    pattern4 = r"≦(.*?)≧(.*?)账单详情\n(.*?)(-?\d+\.\d+)\n(.*?)\n创建时间\n(.*?)\n(.*?)\n商品订单\n(.*?)\n联系商家\n(.*?)"
     pattern_error = r"≦(.*?)≧(.*?)"
     # pattern = r"转账-转给(.*?)\n(-?\d+\.\d+)\n当前状态\n(.*?)\n转账时间\n(.*?)\n收款时间\n(.*?)\n支付方式\n(.*?)\n转账单号\n(\d+)"
     # 存储提取出的数据
@@ -142,18 +142,19 @@ def extract_transfer_records(records):
                     }
                     extracted_data.append(transfer_record)
                 else:
-                    # pattern4 = r"≦(.*?)≧(.*?)账单详情\n(.*?)(-?\d+\.\d+)\n(.*?)\n创建时间\n(.*?)\n(.*?)"
+                    # pattern4 = r"≦(.*?)≧(.*?)账单详情\n(.*?)(-?\d+\.\d+)\n(.*?)\n创建时间\n(.*?)\n(.*?)\n商品订单\n(.*?)\n联系商家\n(.*?)"
                     match = re.search(pattern4, record, re.DOTALL)
                     if match:
                         image_name = match.group(1).strip()
                         # image_path = "=HYPERLINK(\"D:\\payinfo\\2023\\"+image_name+"\")"
                         # image_path = "=HYPERLINK(\""+input_dir+image_name+"\")"
-                        image_path = "=HYPERLINK(MID(CELL(\"filename\"),1,FIND(\"[\",CELL(\"filename\"))-1) & \""+image_name+"\", \"点击查看转账截图\")"
+                        image_path = "=HYPERLINK(MID(CELL(\"filename\"),1,FIND(\"[\",CELL(\"filename\"))-1) & \""+image_name+"\", \"点击查看账单截图\")"
                         temp1 = match.group(2)
                         transfer_to = match.group(3).strip()
                         transfer_amount = float(match.group(4).replace(',', ''))  # 去除金额中的逗号并转为浮点数
                         temp2 = match.group(5).strip()  # 去除状态前后的空格
                         create_time = match.group(6)
+                        goods = match.group(8)
                         # pay_time = match.group(7)
                         # # payment_method = match.group(6)
                         # transfer_number = match.group(8)
@@ -163,6 +164,7 @@ def extract_transfer_records(records):
                             "账单详情": transfer_to,
                             "账单金额": transfer_amount,
                             "创建时间": create_time,
+                            "商品订单": goods,
                             "转账截图": image_path,
                             "识别状态": "成功",
                             "未识别字段1": temp2,
@@ -234,8 +236,11 @@ if __name__ == "__main__":
                 df['转账金额'] = pd.to_numeric(df['转账金额'], errors='coerce').abs()
                 df = df.sort_values(by='转账时间')
             else:
-                df['账单详情'] = df['账单详情'].str.replace('>', '') #.replace(')', '').replace('》', '')
+                df['账单详情'] = df['账单详情'].str.replace('>', '') 
+                df['账单详情'] = df['账单详情'].str.replace(')', '') 
+                df['账单详情'] = df['账单详情'].str.replace('》', '') 
                 df['账单详情'] = df['账单详情'].apply(process_string)
+                df['商品订单'] = df['商品订单'].str.replace('\n', '')
                 df = df.sort_values(by='创建时间')
             # output_file = r"D:\payinfo\2023\output.xlsx"
             output_file = file_path.replace('txt', 'xlsx')
