@@ -4,7 +4,7 @@
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
 
 void write_file(){
-	FILE *fp=fopen("C:/Users/17167/Documents/ZZP/Dev/example.txt","w+");
+	FILE *fp=fopen("C:/Users/17167/Documents/ZZP/example.txt","w+");
 	srand((unsigned int)time(NULL));
 	int num;
 	char buf[100];
@@ -18,7 +18,7 @@ void write_file(){
 } 
 
 void read_file(){
-	FILE *fp=fopen("C:/Users/17167/Documents/ZZP/Dev/example.txt","a+");
+	FILE *fp=fopen("C:/Users/17167/Documents/ZZP/example.txt","a+");
 	char buf[100];
 	int a[2000];
 	int i;
