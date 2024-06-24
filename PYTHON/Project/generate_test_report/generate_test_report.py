@@ -30,7 +30,5 @@ if __name__ == "__main__":
     file_path = filedialog.askopenfilename(title="选择Word文档", filetypes=[("Word文档", "*.docx")])
 
     if file_path:
-        # 替换为你的测试人名字
-        tester_name = 'XXX'
         update_report_template(file_path)
         print("处理完成！")
