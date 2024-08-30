@@ -32,7 +32,7 @@ class MyNet(nn.Module):
         super(MyNet, self).__init__()
         self.conv1 = nn.Conv2d(1,32,3)
         self.bn1 = nn.BatchNorm2d(32)
-        self.L = nn.Linear(32,26,26,10)
+        self.L = nn.Linear(32*26*26,10)
     def forward(self, x):
         out = self.conv1(x)
         out = self.bn1(out)
@@ -51,7 +51,7 @@ lossf = nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
 metrics = torchmetrics.Accuracy(task='multiclass', num_classes=10)
 
-for i in range():
+for i in range(10):
     for batchX, batchY in data_loader:
         score = model(batchX)
         score = torch.squeeze(score)
