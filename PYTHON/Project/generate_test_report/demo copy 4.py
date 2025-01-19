@@ -1,5 +1,5 @@
 import wmi
-
+ 
 def list_wmi_classes():
     try:
         # 连接到本地计算机
