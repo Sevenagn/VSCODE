@@ -5,15 +5,22 @@ import time
 import os
 import winsound  # 僅適用於 Windows
 
+# 自動定位當前腳本所在的目錄，避免相對路徑錯誤
+script_dir = os.path.dirname(os.path.abspath(__file__))
+encoding_path = os.path.join(script_dir, 'models', 'encodings.pkl')
+
 # 載入已知人臉
-with open('encodings.pkl', 'rb') as f:
+with open(encoding_path, 'rb') as f:
     known_encodings, known_names = pickle.load(f)
 
 # 特定要監控的人名（可以是多個）
-target_person = "Seven"
+target_persons = ["Seven", "Jack", "Alice"]  # <== 修改這裡
+
 notified = False  # 是否已通知
 cooldown_time = 3  # 通知冷卻時間（秒）
 last_notify_time = 0
+# 控制是否提醒未知人臉
+alert_unknown = True  # True 表示提醒未註冊的人，False 表示不提醒
 
 video = cv2.VideoCapture(0)
 print("[INFO] 開始辨識，按 q 離開")
@@ -33,13 +40,21 @@ while True:
             matched_idx = matches.index(True)
             name = known_names[matched_idx]
 
-            # === 偵測到目標人物 ===
-            if name == target_person:
+            # === 偵測到目標人物（多個支援）===
+            if name in target_persons:
                 now = time.time()
                 if not notified or (now - last_notify_time > cooldown_time):
-                    print(f"[ALERT] 偵測到 {target_person}！")
-                    # 播放提示音（Windows）
+                    print(f"[ALERT] 偵測到 {name}！")
                     winsound.Beep(1000, 500)  # 1000 Hz, 0.5 秒
+                    notified = True
+                    last_notify_time = now
+        else:
+            # 未註冊人臉
+            if alert_unknown:
+                now = time.time()
+                if not notified or (now - last_notify_time > cooldown_time):
+                    print(f"[ALERT] 偵測到未知人員！")
+                    winsound.Beep(1500, 500)  # 更高頻率表示未知
                     notified = True
                     last_notify_time = now
 
