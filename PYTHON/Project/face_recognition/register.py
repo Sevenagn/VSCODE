@@ -21,23 +21,29 @@ def register_faces(faces_dir='faces', encoding_file='models/encodings.pkl'):
         print(f"[ERROR] 找不到資料夾：{faces_dir}")
         return
 
-    for filename in os.listdir(faces_dir):
-        if filename.endswith(('.jpg', '.png')):
-            name = os.path.splitext(filename)[0]
-            image_path = os.path.join(faces_dir, filename)
-            image = face_recognition.load_image_file(image_path)
-            encodings = face_recognition.face_encodings(image)
-            if encodings:
-                known_encodings.append(encodings[0])
-                known_names.append(name)
-                print(f"[INFO] 已註冊: {name}")
-            else:
-                print(f"[WARNING] 無法在 {filename} 中偵測人臉")
+    # 遍歷每個子資料夾（每個人一個資料夾）
+    for person_name in os.listdir(faces_dir):
+        person_dir = os.path.join(faces_dir, person_name)
+        if not os.path.isdir(person_dir):
+            continue  # 跳過非資料夾項目
 
-    # 儲存編碼到 models/encodings.pkl
+        for file in os.listdir(person_dir):
+            if file.lower().endswith(('.jpg', '.png', '.jpeg')):
+                image_path = os.path.join(person_dir, file)
+                image = face_recognition.load_image_file(image_path)
+                encodings = face_recognition.face_encodings(image)
+
+                if encodings:
+                    known_encodings.append(encodings[0])
+                    known_names.append(person_name)
+                    print(f"[INFO] 已註冊: {person_name} - {file}")
+                else:
+                    print(f"[WARNING] 無法在 {file} 中偵測人臉")
+
+    # 儲存編碼
     with open(encoding_file, 'wb') as f:
         pickle.dump((known_encodings, known_names), f)
         print(f"[INFO] 編碼已儲存到 {encoding_file}")
 
 if __name__ == '__main__':
-    register_faces()
+    register_faces(r'D:\Seven\AGN\Data\face_recognition\faces')
